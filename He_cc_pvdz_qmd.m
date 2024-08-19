@@ -16,7 +16,7 @@
 % April 11, 2024 & University of North Dakota 
 %
 function [] = He_cc_pvdz_qmd
-clear; clc
+clc
 %
 format long
 %
@@ -36,7 +36,7 @@ H_core = [-1.94101369 -1.58026098  0.          0.          0.        ;
 %
 dim = 5; % size of basis sets & (4s,1p) -> [2s,1p] = 2x1 + 1x3 = 5
 %
-itermax = 300; tol = 1e-8;
+itermax = 1000; tol = 1e-8;
 %
 tei_n = 625;              % = 5^4, .i.e., all values of TEI
 %
@@ -66,17 +66,19 @@ Q_tei = tei;
 dt = 0.1; %# time step
 dt2 = dt * dt;
 dt4 = dt2 * dt2;
-gamma = 1.500; %# frictional constant
-
-mass = 1.00;
-massMinusGamma = mass - 0.5*gamma*dt;
-massPlusGamma = mass + 0.5*gamma*dt;
+gamma = 1.200; %# frictional constant
 %
-
+mu_mass = 1.5; % ficticious mass
+%
+massMinusGamma = 1. - 0.5*gamma*dt./mu_mass;
+massPlusGamma = 1. + 0.5*gamma*dt./mu_mass;
+%
 C = [0.5, 0.5, 0.5, 0.5, 0.5]';
 C_old = C;
 %
 En_0_old = 0.;
+%
+fileID_save_data_1 = fopen('He_cc_pvdz_qmd.txt','w');
 %
 for iter = 1:itermax
     iter
@@ -101,24 +103,24 @@ for iter = 1:itermax
     end
     En_0_old = En_0;
     %
-    Ct = (2.* mass * C - massMinusGamma * C_old - 4. * F * C * dt2 )./massPlusGamma;
+    Ct = (2.* C - massMinusGamma * C_old - (1./mu_mass) * F * C * dt2 )./massPlusGamma;
     %
     S_ov_C = S_ov * C;
     S_ov_Ct = S_ov * Ct;
     S_ov_S_ov_C = S_ov * S_ov_C;
     %
-    a = sum(S_ov_S_ov_C.* S_ov_C) * dt4;
-    b = - 2.* sum(S_ov_C.* S_ov_Ct) * dt2;
-    c = sum(S_ov_Ct.* Ct) - 1.;
+    aa = sum(S_ov_S_ov_C.* S_ov_C) * dt4 * (1./mu_mass)^2;
+    bb = - 2.* sum(S_ov_C.* S_ov_Ct) * dt2 * (1./mu_mass);
+    cc = sum(S_ov_Ct.* Ct) - 1.;
     %
-    delta = b * b - 4.*a*c ;
+    delta = bb * bb - 4. *aa * cc ;
     if (delta < 0.)
         break
     end
     %
     sdelta = sqrt(delta);
-    lam1 = (-b - sdelta)/(2.*a);
-    lam2 = (-b + sdelta)/(2.*a);
+    lam1 = (-bb - sdelta)/(2.*aa);
+    lam2 = (-bb + sdelta)/(2.*aa);
     %
     if (lam1 < 0.)
         lam = lam2;
@@ -126,15 +128,41 @@ for iter = 1:itermax
         lam = lam1;
     end
     %
-    Ct = Ct - lam * dt2 * S_ov_C;
+    Ct = Ct - lam * dt2 * S_ov_C * (1./mu_mass) ;
     %
     C_old = C;
     C = Ct;
     
+    output = [iter * dt, En_0];
+    %
+ %   output = [ii * dt, R1, v1, KE];    
+    %
+    fprintf(fileID_save_data_1, '%4.4f \t %8.12f\n', output);     
 
 end
+%
+fclose(fileID_save_data_1);
 
-En_0  % En_0 = -2.855160435748729 vs -2.855160473239254au = SCF calculation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+read_md_data = fopen('He_cc_pvdz_qmd.txt', 'r');               % 
+read_md_data = textscan(read_md_data, '%f %f');
+md_step_ii = read_md_data{1};
+md_En = read_md_data{2};
+%
+
+figure(1)
+hold on
+plot(md_step_ii, md_En, 'b', 'LineWidth',1.5 )
+hold off
+xlabel('\mbox{Time}','Interpreter','latex') % ,'fontsize',16
+ylabel('$E_{0}$','Interpreter','latex','Rotation',1) % , 'Rotation',0
+%axis([0. 8. -2.860 -2.845])
+set(gca,'FontSize',16)
+box on
+
+
+
+En_0  % En_0 = -2.855160379226869 vs -2.855160473239254au = SCF calculation
 %%%
 return
 end
