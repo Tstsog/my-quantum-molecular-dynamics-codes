@@ -6,7 +6,7 @@ Author: Tsogbayar Tsednee (PhD) Contact: tsog215@gmail.com
 
 # Introduction:
 
-The Matlab codes computes the ground state energy for atoms and molecules using the Car-Parrinello approach in terms of the quantum molecular dynamics method, in which the Hamiltonian, overlapping and two-electron integral are computed by the restricted/unrestricted self-consistent field calculation.  
+The Matlab codes computes the ground state energy for atoms and molecules using the Born-Oppenheimer and Car-Parrinello approaches in terms of the quantum molecular dynamics method, in which the Hamiltonian, overlapping and two-electron integral are computed by the restricted/unrestricted self-consistent field calculation.  
 
 # Requirement:
 
