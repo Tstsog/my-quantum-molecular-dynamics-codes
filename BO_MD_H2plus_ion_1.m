@@ -19,6 +19,8 @@
 %
 function [] = BO_MD_H2plus_ion_1
 %
+clc;
+%
 gamma = 15.;  % frictional (damping) constant 
 Mass_H = 1836.15/2; % reduced mass (mu = mass_of_proton/2)
 dR = 0.01;
