@@ -9,7 +9,7 @@
 % Gradient of potential energy surface is computed by a finite difference scheme and
 % Verlet method is used to integrate an equation [2]. 
 %
-% Ref. [1]: "Ab Initio Molecular Dynamics Basic Theory and Advanced Methods" by Dominik Marx and Jürg Hutter
+% Ref. [1]: "Ab Initio Molecular Dynamics Basic Theory and Advanced Methods" by Dominik Marx and Jürg Hutter, Cambridge University Press (2009). 
 % Ref. [2]: Chapter 9 of "Computational Physics" book by Jos Thijssen. 
 %
 % Written by Tsogbayar Tsednee (PhD)
