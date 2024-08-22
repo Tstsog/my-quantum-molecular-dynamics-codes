@@ -22,14 +22,14 @@ function [] = BO_MD_H2plus_ion_1
 clc;
 %
 gamma = 15.;  % frictional (damping) constant 
-Mass_H = 1836.15/2; % reduced mass (mu = mass_of_proton/2)
+Mass_H = 1836.15*2; % reduced mass (mu = mass_of_proton/2)
 dR = 0.01;
 %
 R0 = 1.000;
 R_old = R0;
 dt = 10.0;
 %
-N_step = 200;
+N_step = 400;
 %
 fileID_save_data_1 = fopen('BO_MD_H2plus_ion_1.txt','w');
 %
@@ -45,7 +45,7 @@ for ii = 1:N_step
     R_old = R0;
     R0 = Rt;
     %
-    output = [ii*dt, Rt];
+    output = [ii*dt, Rt]
     %
     fprintf(fileID_save_data_1, '%4.4f \t %8.6f\n', output); 
 
