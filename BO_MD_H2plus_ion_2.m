@@ -15,14 +15,14 @@
 % Written by Tsogbayar Tsednee (PhD)
 % Email: tsog215@gmail.com
 %
-% April 20, 2024 & University of North Dakota 
+% September 24, 2025 & Institute of Physics and Technology, Mongolian Academy of Sciences
 %
 function [] = BO_MD_H2plus_ion_2
 %
 clc;
 %
 gamma = 15.;  % frictional (damping) constant 
-Mass_H = 1836.15*2; % reduced mass (mu = mass_of_proton/2)
+Mass_H = 1836.15; % reduced mass (mu = mass_of_proton/2)
 dR = 0.01;
 %
 R0 = 1.000;
@@ -41,8 +41,8 @@ for ii = 1:N_step
     dE_R0 = (En_plus_dR - En_minus_dR)/(2*dR);
     RHS = dE_R0 - 1./R0^2; 
     a0 = -(1/Mass_H) * RHS ;
-    v_half = v0 + 0.5 * a0 * dt - (gamma/Mass_H) * v0 * dt;
-    R1 = R0 + v_half * dt;
+    v_half = v0 + 0.5 * dt * a0;
+    R1 = R0 + (1./(1. + gamma*dt/(2*Mass_H))) * v_half * dt;    
     %
     % 2nd step
     [En_plus_dR1] = H2plus_eig_values_for_sigma_states(R1, dR);
@@ -50,7 +50,7 @@ for ii = 1:N_step
     dE_R1 = (En_plus_dR1 - En_minus_dR1)/(2*dR);
     RHS_1 = dE_R1 - 1./R1^2; 
     a1 = -(1/Mass_H) * RHS_1 ;
-    v1 = v_half + 0.5 * a1 * dt;
+    v1 = ((1. - gamma*dt/(2*Mass_H))/(1. + gamma*dt/(2*Mass_H))) * v_half + 0.5 * a1 * dt;    
     %
     v0 = v1;
     R0 = R1;    
