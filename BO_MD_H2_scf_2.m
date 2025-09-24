@@ -18,7 +18,7 @@
 % Written by Tsogbayar Tsednee (PhD)
 % Email: tsog215@gmail.com
 %
-% April 20, 2024 & University of North Dakota 
+% September 24, 2025 & Institute of Physics and Technology, Mongolian Academy of Sciences
 %
 function [] = BO_MD_H2_scf_2
 clc;
@@ -44,8 +44,8 @@ for ii = 1:N_step
     dE_R0 = (En_plus_dR - En_minus_dR)/(2*dR);
     RHS = dE_R0 - 1./R0^2; 
     a0 = -(1/Mass_H) * RHS ;
-    v_half = v0 + 0.5 * a0 * dt - (gamma/Mass_H) * v0 * dt;
-    R1 = R0 + v_half * dt;
+    v_half = v0 + 0.5 * dt * a0;
+    R1 = R0 + (1./(1. + gamma*dt/(2*Mass_H))) * v_half * dt;    
     %
     % 2nd step
     [En_plus_dR1] = H2_scf_plus_dR(R1, dR);
@@ -53,7 +53,7 @@ for ii = 1:N_step
     dE_R1 = (En_plus_dR1 - En_minus_dR1)/(2*dR);
     RHS_1 = dE_R1 - 1./R1^2; 
     a1 = -(1/Mass_H) * RHS_1 ;
-    v1 = v_half + 0.5 * a1 * dt;
+    v1 = ((1. - gamma*dt/(2*Mass_H))/(1. + gamma*dt/(2*Mass_H))) * v_half + 0.5 * a1 * dt;    
     %
     v0 = v1;
     R0 = R1;    
@@ -81,7 +81,7 @@ md_KE = read_md_data{4};
 
 figure(1)
 hold on
-plot(md_step_ii, md_R, 'b')
+plot(md_step_ii, md_R, 'b', LineWidth=1.2)
 hold off
 xlabel('\mbox{Time}\,(au)','Interpreter','latex') % ,'fontsize',16
 ylabel('$R\,(au)$','Interpreter','latex') % , 'Rotation',0 ,'Rotation',1
@@ -91,7 +91,7 @@ box on
 
 figure(2)
 hold on
-plot(md_step_ii, md_vel, 'b')
+plot(md_step_ii, md_vel, 'b', LineWidth=1.2)
 hold off
 xlabel('\mbox{Time}\,(au)','Interpreter','latex') % ,'fontsize',16
 ylabel('$Velocity$','Interpreter','latex') % , 'Rotation',0
@@ -102,7 +102,7 @@ box on
 
 figure(3)
 hold on
-plot(md_step_ii, md_KE, 'b')
+plot(md_step_ii, md_KE, 'b', LineWidth=1.2)
 hold off
 xlabel('\mbox{Time}\,(au)','Interpreter','latex') % ,'fontsize',16
 ylabel('$Kinetic\, energy$','Interpreter','latex') % , 'Rotation',0
